@@ -1,9 +1,10 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import Field
+
 from models.genre import ESFilmGenre
 from models.mixin import BaseMixin
 from models.person import ESFilmPerson
+from pydantic import Field
 
 
 class Film(BaseMixin):

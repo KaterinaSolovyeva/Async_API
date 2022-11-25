@@ -1,5 +1,5 @@
-from pydantic import Field
 from models.mixin import BaseMixin
+from pydantic import Field
 
 
 class Person(BaseMixin):

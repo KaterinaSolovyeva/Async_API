@@ -1,16 +1,38 @@
-import orjson
-from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
+from pydantic import Field
+from models.genre import ESFilmGenre
+from models.mixin import BaseMixin
+from models.person import ESFilmPerson
 
 
-def orjson_dumps(v, *, default):
-    return orjson.dumps(v, default=default).decode()
-
-
-class Film(BaseModel):
-    id: str
+class Film(BaseMixin):
+    """Filmworks on the homepage and search."""
+    uuid: str
     title: str
-    description: str
+    imdb_rating: float
 
-    class Config:
-        json_loads = orjson.loads
-        json_dumps = orjson_dumps
+
+class FilmDetailed(Film):
+    """All information about the filmwork"""
+    description: Optional[str]
+    genres: Optional[list[ESFilmGenre]]
+    actors: Optional[list[ESFilmPerson]]
+    writers: Optional[list[ESFilmPerson]]
+    directors: Optional[list[ESFilmPerson]]
+
+
+class ESFilm(BaseMixin):
+    """Модель описывающая document в Elasticserch."""
+    uuid: str = Field(..., alias='id')
+    imdb_rating: Optional[float]
+    genres: Optional[list[ESFilmGenre]]
+    title: str
+    description: Optional[str]
+    director: Optional[list[str]]
+    actors_names: Optional[list[str]]
+    writers_names: Optional[list[str]]
+    directors: Optional[list[ESFilmPerson]]
+    actors: Optional[list[ESFilmPerson]]
+    writers: Optional[list[ESFilmPerson]]
+    modified: datetime

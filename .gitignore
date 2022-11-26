@@ -143,3 +143,5 @@ dmypy.json
 ETLTests-2.json
 dump.json
 states.json
+db
+elastic_data

@@ -1,11 +1,10 @@
-# from elasticsearch_dsl import Q, Search
 from functools import lru_cache
 from typing import Optional
 
 from aioredis import Redis
-from core.config import DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE
-from db.elastic import get_elastic
-from db.redis import get_redis
+from app.core.config import settings
+from app.connections.elastic import get_es_connection
+from app.connections.redis import get_redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
 from models.film import ESFilm, Film
@@ -19,8 +18,8 @@ class FilmService:
         self.elastic = elastic
     
     async def get_all_films_from_elastic(self, **params):
-        page_size = params.get('page_size', DEFAULT_PAGE_SIZE)
-        page = params.get('page', DEFAULT_PAGE_NUMBER)
+        page_size = params.get('page_size', settings.DEFAULT_PAGE_SIZE)
+        page = params.get('page', settings.DEFAULT_PAGE_NUMBER)
         sort = params.get('sort', '')
         genre = params.get('genre', None)
         body = None
@@ -65,7 +64,7 @@ class FilmService:
             await self._put_film_to_cache(film)
         return film
 
-    async def _get_film_from_elastic(self, film_id: str) -> Optional[Film]:
+    async def _get_film_from_elastic(self, film_id: str) -> Optional[ESFilm]:
         try:
             doc = await self.elastic.get('movies', film_id)
         except NotFoundError:
@@ -86,6 +85,6 @@ class FilmService:
 @lru_cache()
 def get_film_service(
         redis: Redis = Depends(get_redis),
-        elastic: AsyncElasticsearch = Depends(get_elastic),
+        elastic: AsyncElasticsearch = Depends(get_es_connection),
 ) -> FilmService:
     return FilmService(redis, elastic)

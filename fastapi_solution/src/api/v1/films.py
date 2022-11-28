@@ -1,10 +1,9 @@
 from http import HTTPStatus
-from typing import Optional
 
-from core.config import DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE
+from app.core.config import settings
 from fastapi import APIRouter, Depends, HTTPException, Query
-from models.film import ESFilm, Film, FilmDetailed
-from pydantic import BaseModel
+
+from models.film import Film, FilmDetailed
 from services.film import FilmService, get_film_service
 
 router = APIRouter()
@@ -20,8 +19,8 @@ async def get_all_filmworks(
     film_service: FilmService = Depends(get_film_service),
     sort: str = Query('', description='Sorting'),
     genre: str = Query(None, description='Filter by genre uuid', alias='filter[genre]'),
-    page_size: int = Query(DEFAULT_PAGE_SIZE, description='Number of filmworks on page', alias='page[size]'),
-    page: int = Query(DEFAULT_PAGE_NUMBER, description='Page number', alias='page[number]')
+    page_size: int = Query(settings.DEFAULT_PAGE_SIZE, description='Number of filmworks on page', alias='page[size]'),
+    page: int = Query(settings.DEFAULT_PAGE_NUMBER, description='Page number', alias='page[number]')
 ):
     """Returns all filmworks."""
     films = await film_service.get_all_films_from_elastic(
@@ -31,6 +30,7 @@ async def get_all_filmworks(
         genre=genre
     )
     return films
+
 
 @router.get(
     '/{film_id}',

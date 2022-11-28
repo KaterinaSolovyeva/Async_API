@@ -2,14 +2,13 @@ import logging
 
 import aioredis
 import uvicorn as uvicorn
-from api.v1 import films
 from app.core.config import settings
 from app.core.logger import LOGGING
 from app.connections import elastic, redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from app.core.router_v1 import router
+from api.v1.router_v1 import router
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -36,7 +35,6 @@ async def shutdown():
     await redis.redis.close()
     await elastic.es.close()
 
-app.include_router(films.router, prefix='/api/v1/films', tags=['films'])
 app.include_router(router, prefix='/api/v1')
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
 from typing import Optional
 
-from genres.models.genre import ESFilmGenre
+from models.genre import ESFilmGenre
 from app.models import BaseMixin
-from persons.models.person import ESFilmPerson
+from models.person import ESFilmPerson
 from pydantic import Field
 
 

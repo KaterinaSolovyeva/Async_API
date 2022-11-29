@@ -1,8 +1,7 @@
-from datetime import datetime
 from typing import Optional
 
 from models.genre import ESFilmGenre
-from models.mixin import BaseMixin
+from app.models import BaseMixin
 from models.person import ESFilmPerson
 from pydantic import Field
 
@@ -36,4 +35,3 @@ class ESFilm(BaseMixin):
     directors: Optional[list[ESFilmPerson]]
     actors: Optional[list[ESFilmPerson]]
     writers: Optional[list[ESFilmPerson]]
-    modified: datetime

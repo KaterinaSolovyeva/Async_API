@@ -1,10 +1,10 @@
-from models.mixin import BaseMixin
+from app.models import BaseMixin
 from pydantic import Field
 
 
 class Genre(BaseMixin):
     """Genres in the list."""
-    uuid: str
+    uuid: str = Field(..., alias='id')
     name: str
 
 

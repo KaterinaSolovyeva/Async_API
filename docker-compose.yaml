@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+
+  postgres:
+    image: postgres:14.5
+    container_name: "database"
+    volumes:
+      - ./db:/var/lib/postgresql/data
+      - ./dbscripts/:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "54321:5432"
+
+  elastic:
+    image: elasticsearch:7.9.1
+    container_name: "elastic"
+    volumes:
+      - ./elastic_data:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+
+  redis:
+    image: redis
+    container_name: aioredis
+    ports:
+      - "63791:6379"
+
+  backend:
+    container_name: backend
+    build:
+      context: .
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - elastic
+      - redis
+    ports:
+      - "8000:8000"

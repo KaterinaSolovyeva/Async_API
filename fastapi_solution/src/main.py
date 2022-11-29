@@ -2,13 +2,14 @@ import logging
 
 import aioredis
 import uvicorn as uvicorn
-from app.core.config import settings
-from app.core.logger import LOGGING
-from app.connections import elastic, redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+
 from api.v1.router_v1 import router
+from app.connections import elastic, redis
+from app.core.config import settings
+from app.core.logger import LOGGING
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

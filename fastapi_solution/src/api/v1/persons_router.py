@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends
 from app.connections.elastic import get_es_connection
 from app.serializers.query_params_classes import PaginationDataParams
 from models.person import Person
-from persons_toolkit.toolkit import PersonsToolkit
+from services.persons_toolkit import PersonsToolkit
 
 router = APIRouter()
 

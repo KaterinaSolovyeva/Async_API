@@ -1,6 +1,6 @@
 import psycopg2
-
 from etl_service.etl.helpers import backoff
+
 from app.core.config import settings
 
 

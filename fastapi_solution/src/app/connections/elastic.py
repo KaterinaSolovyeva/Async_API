@@ -2,8 +2,8 @@ from typing import Optional
 
 from elasticsearch import AsyncElasticsearch
 
+from app.connections.helpers import backoff
 from app.core.config import settings
-from etl_service.etl.helpers import backoff
 
 es: Optional[AsyncElasticsearch] = None
 

@@ -1,5 +1,6 @@
-from app.models import BaseMixin
 from pydantic import Field
+
+from app.models import BaseMixin
 
 
 class Person(BaseMixin):

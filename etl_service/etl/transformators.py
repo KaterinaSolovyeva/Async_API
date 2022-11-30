@@ -1,14 +1,16 @@
 from typing import Tuple, Generator
 
-from etl_service.etl.data_structures.entities_meta import EntityMeta
-from etl_service.etl.storage import State, RedisStorage
-from etl_service.etl.postgres_extractor import PostgresExtractor
+from etl.data_structures.entities_meta import EntityMeta
+from etl.storage import State, RedisStorage
+from etl.postgres_extractor import PostgresExtractor
+
+from etl.helpers import redis
 
 
 class Transformator:
     """Формирует тело для bulk запроса в elasticsearch"""
     def __init__(self, data_size: int = 1000):
-        self.state = State(storage=RedisStorage)
+        self.state = State(storage=RedisStorage(db=redis))
         self.data_size = data_size
 
     async def transform_data(self, entity_meta: EntityMeta) -> Generator[Tuple[list, str], None, None]:

@@ -14,7 +14,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         with connection.cursor() as postgre_curs, conn_context(os.environ.get('SQLITE_DB_PATH')) as sqlite_conn:
             table_names = get_db_tables(cursor=postgre_curs)
-            print(table_names)
             for table_name in table_names:
                 data_to_migrate = list()
                 for data in read_data_from_table(table_name=table_name, conn=sqlite_conn):

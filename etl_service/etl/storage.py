@@ -6,8 +6,6 @@ from typing import Any, Optional, Type, Union
 
 from redis import Redis
 
-from etl_service.etl.helpers import backoff
-
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
@@ -43,13 +41,8 @@ class JsonFileStorage(BaseStorage):
 
 
 class RedisStorage(BaseStorage):
-    def __init__(self):
-        self.db: Optional[Redis] = None
-        self.connect()
-
-    @backoff
-    def connect(self):
-        self.db = Redis(settings.REDIS_HOST, settings.REDIS_PORT)
+    def __init__(self, db):
+        self.db = db
 
     def save_state(self, state: dict) -> None:
         self.db.mset(state)
@@ -69,12 +62,9 @@ class State:
         self.storage = storage
 
     def set_state(self, key: str, value: Any) -> None:
-        """Установить состояние для определённого ключа"""
-        state = self.storage.retrieve_state()
-        state[key] = value
-        self.storage.save_state(state)
+        """Set the state for a specific key."""
+        self.storage.save_state(state={key: value})
 
     def get_state(self, key: str) -> Any:
-        """Получить состояние по определённому ключу"""
-        state = self.storage.retrieve_state()
-        return state.get(key)
+        """Get the state by a specific key."""
+        return self.storage.retrieve_state().get(key)

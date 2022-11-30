@@ -1,17 +1,12 @@
 import os
 from typing import Optional
 
-from dotenv import load_dotenv
 from pydantic import BaseSettings
-
-load_dotenv()
 
 
 class Settings(BaseSettings):
     ES_HOST: str = 'localhost'
     ES_PORT: int = 9200
-
-    STORAGE_FILE_PATH: str = 'etl_service/state.json'
 
     POSTGRES_DB: str = 'postgres'
     POSTGRES_USER: str = 'postgres'
@@ -20,6 +15,7 @@ class Settings(BaseSettings):
     POSTGRES_PORT: int = 5432
 
     REDIS_URL: str = 'redis://localhost:6379'
+    REDIS_CACHE_TTL: int = 60*5  # в секундах
 
     PROJECT_NAME: str = 'Read-only API for an online cinema'
     PROJECT_DESCRIPTION: str = 'Information about films, genres and people who participated in the creation of the work'

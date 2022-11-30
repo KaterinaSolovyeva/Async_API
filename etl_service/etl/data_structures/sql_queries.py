@@ -34,6 +34,7 @@ persons_sql_query = """
     LEFT JOIN content.person_film_work pfw ON pfw.person_id = p.id
     LEFT JOIN content.film_work fw ON fw.id = pfw.film_work_id
     WHERE p.modified > '{last_modified}'
+    GROUP BY p.id
     ORDER BY p.modified
 """
 
@@ -58,7 +59,7 @@ movies_sql_query = """
            )
             FILTER (WHERE g.id is not null),
            '[]'
-       ) as actors,
+       ) as genres,
         COALESCE(
             array_agg(DISTINCT p.full_name)
             FILTER (WHERE p.id is not null and pfw.role = 'director'),

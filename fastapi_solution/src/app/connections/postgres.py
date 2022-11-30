@@ -1,10 +1,8 @@
 import psycopg2
-from etl_service.etl.helpers import backoff
 
 from app.core.config import settings
 
 
-@backoff(border_sleep_time=5)
 async def get_postgres_connection():
     """Функция для установления соединения с postgres"""
     return psycopg2.connect(

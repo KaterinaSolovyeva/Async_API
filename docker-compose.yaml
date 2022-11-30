@@ -26,118 +26,85 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+    healthcheck:
+      test: curl -u elastic:elastic -s -f elastic:9200/_cat/health >/dev/null || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - "9200:9200"
 
   redis:
     image: redis
     container_name: aioredis
+    healthcheck:
+      test: [ "CMD", "redis-cli","ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - "63791:6379"
 
-  backend:
-    container_name: backend
+  fastapi:
+    container_name: fastapi
     build:
-      context: .
+      context: ./fastapi_solution
     env_file:
       - .env
     depends_on:
-      - postgres
-      - elastic
-      - redis
+      postgres:
+        condition: service_healthy
+      elastic:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "8000:8000"
 
+  admin:
+    build:
+      context: ./admin_service
+    container_name: admin
+    volumes:
+      - ./admin_service/static:/opt/app/static
+    command: sh -c "
+        python manage.py collectstatic --no-input &&
+        python manage.py migrate &&
+        ./run_uwsgi.sh
+      "
+    restart:
+      always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    ports:
+      - "8001:8000"
 
-# Мой вариант на всяикий случай
+  etl:
+    container_name: etl
+    build:
+      context: ./etl_service
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      elastic:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
-# version: '3.3'
-
-# services:
-
-#   db:
-#     image: postgres:14.0-alpine
-#     volumes:
-#       - ./schema_design/movies_database.sql:/docker-entrypoint-initdb.d/movies_database.sql
-#       - postgres_data:/var/lib/postgresql/data
-#     restart: always
-#     env_file:
-#       - ./.env
-#     ports:
-#       - 5432:5432
-
-#   service:
-#     build: ./django_api
-#     restart: always
-#     volumes:
-#       - static_value:/opt/app/static/
-#       - media_value:/opt/app/media/
-#     depends_on:
-#       - db
-#     env_file:
-#       - ./.env
-
-#   nginx:
-#     image: nginx:latest
-#     restart: always
-#     volumes:
-#       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-#       - ./nginx/configs/site.conf:/etc/nginx/conf.d/site.conf:ro
-#       - static_value:/opt/app/static/
-#       - media_value:/opt/app/media/
-#     depends_on:
-#       - service
-#     ports:
-#       - '80:80'
-
-#   redis:
-#     image: redis:7-alpine
-#     restart: always
-#     env_file:
-#       - .env
-#     ports:
-#       - '6379:6379' 
-#     volumes:
-#       - redis_data:/data
-
-#   elasticsearch_db:
-#     image: elasticsearch:8.5.0
-#     restart: always
-#     env_file:
-#       - .env
-#     environment:
-#       - xpack.security.enabled=false
-#       - discovery.type=single-node
-#     volumes:
-#       - elasticsearch_data:/opt/elasticsearch/data
-#     ports:
-#       - '9200:9200'
-  
-#   etl:
-#     build: ./postgres_to_es
-#     restart: always
-#     volumes:
-#       - ./postgres_to_es:/opt/etl/
-#     env_file:
-#       - .env
-#     depends_on:
-#       - elasticsearch_db
-#       - redis
-#       - db
-
-#   api:
-#     build: ./fastapi_solution
-#     restart: always
-#     env_file:
-#       - .env
-#     depends_on:
-#       - elasticsearch_db
-#       - redis
-
-
-# volumes:
-#   elasticsearch_data:
-#   redis_data:
-#   postgres_data:
-#   static_value:
-#   media_value:
+  nginx:
+    image: nginx:1.19.2
+    container_name: nginx
+    volumes:
+      - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./etc/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./admin_service/static:/web/http/static
+    depends_on:
+      - admin
+      - fastapi
+    ports:
+      - "80:80"

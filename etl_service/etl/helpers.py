@@ -1,13 +1,18 @@
 import logging
+import psycopg2
 
 from functools import wraps
 from time import sleep
 from typing import Union
 
+from elasticsearch import AsyncElasticsearch
+
+from etl.settings import settings
+from redis import Redis
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 def backoff(start_sleep_time: Union[int, float] = 0.1, factor: int = 2, border_sleep_time: int = 10):
@@ -45,3 +50,26 @@ def backoff(start_sleep_time: Union[int, float] = 0.1, factor: int = 2, border_s
             return connection
         return inner
     return func_wrapper
+
+
+@backoff(border_sleep_time=15)
+async def get_es_connection():
+    """Функция для установления соединения с es"""
+    return AsyncElasticsearch(
+        hosts=[f'{settings.ELASTIC_HOST}:{settings.ELASTIC_PORT}']
+    )
+
+
+@backoff(border_sleep_time=5)
+async def get_postgres_connection():
+    """Функция для установления соединения с postgres"""
+    return psycopg2.connect(
+            host=settings.POSTGRES_HOST,
+            database=settings.POSTGRES_DB,
+            user=settings.POSTGRES_USER,
+            password=settings.POSTGRES_PASSWORD,
+            port=settings.POSTGRES_PORT,
+        )
+
+
+redis = Redis(settings.REDIS_HOST, settings.REDIS_PORT, decode_responses=True)

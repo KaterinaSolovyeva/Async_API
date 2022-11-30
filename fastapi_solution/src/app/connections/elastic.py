@@ -2,6 +2,7 @@ from typing import Optional
 
 from elasticsearch import AsyncElasticsearch
 
+from app.connections.helpers import backoff
 from app.core.config import settings
 
 es: Optional[AsyncElasticsearch] = None

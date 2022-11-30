@@ -1,6 +1,6 @@
 import uuid
 from abc import ABC, abstractmethod
-from typing import Type, Optional, Union
+from typing import Optional, Type, Union
 
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError

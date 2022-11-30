@@ -1,8 +1,8 @@
 from http import HTTPStatus
 
-from app.core.config import settings
 from fastapi import APIRouter, Depends, HTTPException, Query
 
+from app.serializers.query_params_classes import PaginationDataParams
 from models.film import Film, FilmDetailed
 from services.film import FilmService, get_film_service
 
@@ -17,18 +17,37 @@ router = APIRouter()
 )
 async def get_all_filmworks(
     film_service: FilmService = Depends(get_film_service),
-    sort: str = Query('', description='Sorting'),
-    genre: str = Query(None, description='Filter by genre uuid', alias='filter[genre]'),
-    page_size: int = Query(settings.DEFAULT_PAGE_SIZE, description='Number of filmworks on page', alias='page[size]'),
-    page: int = Query(settings.DEFAULT_PAGE_NUMBER, description='Page number', alias='page[number]')
-):
+    pagination_data: PaginationDataParams = Depends(PaginationDataParams),
+    genre: str = Query(None, description='Filter by genre uuid', alias='filter[genre]')
+) -> list[Film]:
     """Returns all filmworks."""
-    films = await film_service.get_all_films_from_elastic(
-        page_size=page_size,
-        page=page,
-        sort=sort,
+    films = await film_service.get_all_films(
+        pagination_data=pagination_data,
         genre=genre
     )
+    if not films:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Films not found')
+    return films
+
+
+@router.get(
+    '/search',
+    response_model=list[Film],
+    summary='Full-text search',
+    description='Returns filmworks according to the search'
+)
+async def films_search(
+    pagination_data: PaginationDataParams = Depends(PaginationDataParams),
+    query: str = Query(None, description="Part of the filmwork's data"),
+    film_service: FilmService = Depends(get_film_service)
+) -> list[Film]:
+    """Returns list of filmworks by the parameter specified in the query."""
+    films = await film_service.get_all_films(
+        pagination_data=pagination_data,
+        query=query
+    )
+    if not films:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Films not found')
     return films
 
 

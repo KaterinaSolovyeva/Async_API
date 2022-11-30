@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     POSTGRES_PORT: int = 5432
 
     REDIS_URL: str = 'redis://localhost:6379'
+    REDIS_CACHE_TTL: int = 60*5  # в секундах
 
     PROJECT_NAME: str = 'Read-only API for an online cinema'
     PROJECT_DESCRIPTION: str = 'Information about films, genres and people who participated in the creation of the work'

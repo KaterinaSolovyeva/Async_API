@@ -16,7 +16,7 @@ class FilmworkAdmin(admin.ModelAdmin):
 
     search_fields = ('title', 'description', 'id')
 
-    list_prefetch_related = (..., 'genres')
+    list_prefetch_related = ('genres',)
 
     def get_queryset(self, request):
         queryset = (

@@ -7,8 +7,8 @@ from django.utils.translation import gettext_lazy as _
 
 
 class TimeStampedMixin(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    modified = models.DateTimeField(auto_now=True,  null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -29,7 +29,7 @@ class Roles(models.TextChoices):
 
 class Genre(UUIDMixin, TimeStampedMixin):
     name = models.TextField(max_length=255, verbose_name=_('title'))
-    description = models.TextField(blank=True, verbose_name=_('description'))
+    description = models.TextField(blank=True, verbose_name=_('description'), null=True)
     filmworks = models.ManyToManyField("Filmwork", through='GenreFilmwork')
 
     class Meta:
@@ -41,10 +41,9 @@ class Genre(UUIDMixin, TimeStampedMixin):
         return self.name
 
 
-class GenreFilmwork(UUIDMixin):
+class GenreFilmwork(UUIDMixin, TimeStampedMixin):
     film_work = models.ForeignKey('Filmwork', on_delete=models.CASCADE)
     genre = models.ForeignKey('Genre', on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = "content\".\"genre_film_work"
@@ -64,9 +63,9 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
         TVSHOW = 'tv_show', _('tv_show_choice')
 
     title = models.TextField(max_length=100, verbose_name=_('title'))
-    description = models.TextField(max_length=500, verbose_name=_('description'))
+    description = models.TextField(max_length=500, verbose_name=_('description'), null=True, blank=True)
     type = models.CharField(choices=MovieTypesChoices.choices, verbose_name=_('type'), max_length=25)
-    creation_date = models.DateField(verbose_name=_('creation_date'))
+    creation_date = models.DateField(verbose_name=_('creation_date'),  null=True, blank=True)
     rating = models.FloatField(
         blank=True,
         verbose_name=_('rating'),
@@ -112,7 +111,7 @@ class PersonFilmwork(UUIDMixin):
     film_work = models.ForeignKey('Filmwork', on_delete=models.CASCADE, related_name='filmwork_links')
     person = models.ForeignKey('Person', on_delete=models.CASCADE, related_name='person_links')
     role = models.TextField(null=True, verbose_name=_('role'), choices=Roles.choices)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True,  null=True, blank=True)
 
     class Meta:
         db_table = "content\".\"person_film_work"

@@ -2,16 +2,11 @@ import os
 from typing import Optional
 
 from pydantic import BaseSettings
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
 class Settings(BaseSettings):
     ES_HOST: str = 'localhost'
     ES_PORT: int = 9200
-
-    STORAGE_FILE_PATH: str = 'etl_service/state.json'
 
     POSTGRES_DB: str = 'postgres'
     POSTGRES_USER: str = 'postgres'

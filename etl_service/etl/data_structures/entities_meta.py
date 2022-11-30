@@ -1,6 +1,6 @@
 from collections import namedtuple
-from etl_service.etl.data_structures.indices import movies_index, genres_index, persons_index
-from etl_service.etl.data_structures.sql_queries import movies_sql_query, genres_sql_query, persons_sql_query
+from etl.data_structures.indices import movies_index, genres_index, persons_index
+from etl.data_structures.sql_queries import movies_sql_query, genres_sql_query, persons_sql_query
 
 EntityMeta = namedtuple("EntityMeta", ["index_data", "sql_query"])
 

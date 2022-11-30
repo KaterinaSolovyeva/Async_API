@@ -8,7 +8,7 @@ from pydantic import Field
 
 class Film(BaseMixin):
     """Filmworks on the homepage and search."""
-    uuid: str
+    uuid: str = Field(..., alias='id')
     title: str
     imdb_rating: float
 

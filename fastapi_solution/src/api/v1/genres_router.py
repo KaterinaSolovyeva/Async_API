@@ -1,31 +1,38 @@
 import uuid
 from typing import List
 
+from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import APIRouter, Depends
 
 from app.connections.elastic import get_es_connection
+from app.connections.redis import get_redis
 from app.serializers.query_params_classes import PaginationDataParams
 from models.genre import Genre
 from services.genres_toolkit import GenresToolkit
 
 router = APIRouter()
 
+async def get_genres_toolkit(
+        redis: Redis = Depends(get_redis),
+        elastic: AsyncElasticsearch = Depends(get_es_connection),
+) -> GenresToolkit:
+    return GenresToolkit(redis=redis, elastic=elastic)
 
-@router.get("/get/{genre_uid}", response_model=Genre)
+
+@router.get("/{genre_uid}", response_model=Genre)
 async def genre_get_api(
     genre_uid: uuid.UUID,
-    elastic: AsyncElasticsearch = Depends(get_es_connection),
-
+    genres_toolkit: GenresToolkit = Depends(get_genres_toolkit)
 ) -> Genre:
-    person = await GenresToolkit(elastic=elastic).get(pk=genre_uid)
-    return person
+    genre = await genres_toolkit.get(pk=genre_uid)
+    return genre
 
 
-@router.get("/get", response_model=List[Genre])
+@router.get("/", response_model=List[Genre])
 async def genres_get_list_api(
     pagination_data: PaginationDataParams = Depends(PaginationDataParams),
-    elastic: AsyncElasticsearch = Depends(get_es_connection),
+    genres_toolkit: GenresToolkit = Depends(get_genres_toolkit)
 ) -> List[Genre]:
-    persons = await GenresToolkit(elastic=elastic).list(pagination_data=pagination_data)
+    persons = await genres_toolkit.list(pagination_data=pagination_data)
     return persons

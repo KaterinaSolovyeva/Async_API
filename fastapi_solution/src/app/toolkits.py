@@ -2,6 +2,7 @@ import uuid
 from abc import ABC, abstractmethod
 from typing import Type, Optional, Union
 
+from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from pydantic import BaseModel
 
@@ -11,8 +12,9 @@ from app.serializers.query_params_classes import PaginationDataParams
 class BaseToolkit(ABC):
     """Базовый тулкит для реализации базовых REST методов"""
 
-    def __init__(self, elastic: AsyncElasticsearch):
+    def __init__(self, elastic: AsyncElasticsearch, redis: Redis):
         self.elastic = elastic
+        self.redis = redis
 
     @property
     @abstractmethod

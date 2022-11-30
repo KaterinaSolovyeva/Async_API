@@ -17,4 +17,4 @@ RUN chown -R dev:dev /opt/app
 
 USER dev
 
-CMD ["python", "/opt/app/src/main.py"]
+CMD ["python", "/opt/app/main.py"]

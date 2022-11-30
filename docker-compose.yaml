@@ -37,6 +37,11 @@ services:
   redis:
     image: redis
     container_name: aioredis
+    healthcheck:
+      test: [ "CMD", "redis-cli","ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - "63791:6379"
 
@@ -47,9 +52,12 @@ services:
     env_file:
       - .env
     depends_on:
-      - postgres
-      - elastic
-      - redis
+      postgres:
+        condition: service_healthy
+      elastic:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "8000:8000"
 
@@ -84,6 +92,8 @@ services:
       postgres:
         condition: service_healthy
       elastic:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
 #  nginx:

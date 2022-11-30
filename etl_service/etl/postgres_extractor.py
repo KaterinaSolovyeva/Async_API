@@ -1,6 +1,6 @@
 from psycopg2.extras import NamedTupleCursor
 
-from app.connections.postgres import get_postgres_connection
+from etl.helpers import get_postgres_connection
 
 
 class PostgresExtractor:

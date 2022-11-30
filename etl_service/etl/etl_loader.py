@@ -1,14 +1,17 @@
 from elasticsearch import AsyncElasticsearch
 
-from etl_service.etl.transformators import Transformator
-from etl_service.etl.storage import State, RedisStorage
-from etl_service.etl.data_structures.entities_meta import entities_meta
-from app.connections.elastic import get_es_connection
+from etl.transformators import Transformator
+from etl.storage import State, RedisStorage
+from etl.data_structures.entities_meta import entities_meta
+
+from etl.helpers import get_es_connection
+
+from etl.helpers import redis
 
 
 class ESLoader:
     def __init__(self, data_size: int = 1000):
-        self.state = State(storage=RedisStorage)
+        self.state = State(storage=RedisStorage(db=redis))
         self.data_size = data_size
 
     async def load_data(self, last_modified: str = None) -> None:

@@ -6,12 +6,12 @@ RUN groupadd -r dev && useradd -d /opt/app -r -g dev dev \
     && chown dev:dev -R /opt/app
 
 
-COPY requirements.txt .
+COPY ./requirements.txt .
 
 RUN  pip install --upgrade pip \
      && pip install -r requirements.txt --no-cache-dir
 
-COPY fastapi_solution .
+COPY ./src .
 
 RUN chown -R dev:dev /opt/app
 

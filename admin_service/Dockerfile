@@ -1,5 +1,8 @@
 FROM python:3.10.8-slim
 
+RUN apt update
+RUN apt -y install gcc
+
 WORKDIR /opt/app
 
 RUN groupadd -r dev && useradd -d /opt/app -r -g dev dev \

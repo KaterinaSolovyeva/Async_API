@@ -95,7 +95,7 @@ include(
     'components/database.py',
 )
 
-LOCALE_PATHS = ['movies/locale']
+LOCALE_PATHS = [BASE_DIR / 'movies/locale']
 
 INTERNAL_IPS = [
     "127.0.0.1",

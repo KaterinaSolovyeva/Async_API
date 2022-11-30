@@ -96,15 +96,15 @@ services:
       redis:
         condition: service_healthy
 
-#  nginx:
-#    image: nginx:1.19.2
-#    container_name: nginx
-#    volumes:
-#      - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-#      - ./etc/nginx/conf.d:/etc/nginx/conf.d:ro
-#      - ./static:/web/http/static
-#    depends_on:
-#      - admin
-#      - fastapi
-#    ports:
-#      - "80:80"
+  nginx:
+    image: nginx:1.19.2
+    container_name: nginx
+    volumes:
+      - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./etc/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./admin_service/static:/web/http/static
+    depends_on:
+      - admin
+      - fastapi
+    ports:
+      - "80:80"

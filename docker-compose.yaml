@@ -15,8 +15,6 @@ services:
     restart: always
     env_file:
       - .env
-    ports:
-      - "54321:5432"
 
   elastic:
     image: elasticsearch:7.9.1
@@ -31,8 +29,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    ports:
-      - "9200:9200"
 
   redis:
     image: redis
@@ -42,8 +38,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    ports:
-      - "63791:6379"
 
   fastapi:
     container_name: fastapi
@@ -58,8 +52,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    ports:
-      - "8000:8000"
 
   admin:
     build:
@@ -67,11 +59,6 @@ services:
     container_name: admin
     volumes:
       - ./admin_service/static:/opt/app/static
-    command: sh -c "
-        python manage.py collectstatic --no-input &&
-        python manage.py migrate &&
-        ./run_uwsgi.sh
-      "
     restart:
       always
     depends_on:
@@ -79,8 +66,6 @@ services:
         condition: service_healthy
     env_file:
       - .env
-    ports:
-      - "8001:8000"
 
   etl:
     container_name: etl

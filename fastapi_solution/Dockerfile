@@ -7,6 +7,9 @@ RUN groupadd -r dev && useradd -d /opt/app -r -g dev dev \
 
 
 COPY ./requirements.txt .
+COPY ./run_app.sh .
+
+RUN chmod +x run_app.sh
 
 RUN  pip install --upgrade pip \
      && pip install -r requirements.txt --no-cache-dir
@@ -17,4 +20,4 @@ RUN chown -R dev:dev /opt/app
 
 USER dev
 
-CMD ["python", "/opt/app/main.py"]
+ENTRYPOINT ["./run_app.sh"]

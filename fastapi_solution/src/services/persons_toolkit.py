@@ -98,11 +98,10 @@ class PersonsToolkit(BaseToolkit):
         return persons
 
     async def put_person_to_cache(self, person: Person):
-        await self.redis.set(person.uuid, person.json(by_alias=True), expire=settings.REDIS_CACHE_TTL)
         await self.redis.set(
             person.uuid,
             person.json(by_alias=True),
-            expire=settings.REDIS_CACHE_TTL
+            ex=settings.REDIS_CACHE_TTL
         )
 
     async def put_persons_to_cache(self, persons: List[Person], params: dict) -> None:
@@ -110,5 +109,5 @@ class PersonsToolkit(BaseToolkit):
         await self.redis.set(
             key,
             orjson.dumps([person.json(by_alias=True) for person in persons]),
-            expire=settings.REDIS_CACHE_TTL
+            ex=settings.REDIS_CACHE_TTL
         )

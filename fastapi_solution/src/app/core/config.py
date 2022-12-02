@@ -29,5 +29,7 @@ class Settings(BaseSettings):
     ELASTIC_HOST: str = 'localhost'
     ELASTIC_PORT: int = 9200
 
+    LOG_LEVEL: str = 'DEBUG'
+
 
 settings = Settings()

@@ -132,7 +132,7 @@ class FilmService:
         await self.redis.set(
             film.uuid,
             film.json(by_alias=True),
-            expire=FILM_CACHE_EXPIRE_IN_SECONDS
+            ex=FILM_CACHE_EXPIRE_IN_SECONDS
         )
 
     async def _put_films_to_cache(self, films, params) -> None:
@@ -140,7 +140,7 @@ class FilmService:
         await self.redis.set(
             key,
             orjson.dumps([film.json(by_alias=True) for film in films]),
-            expire=FILM_CACHE_EXPIRE_IN_SECONDS
+            ex=FILM_CACHE_EXPIRE_IN_SECONDS
         )
 
 

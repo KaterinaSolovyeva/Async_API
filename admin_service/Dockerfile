@@ -23,8 +23,10 @@ COPY . .
 RUN chmod +x run_uwsgi.sh
 RUN chown dev:dev /var/log
 
+RUN python manage.py collectstatic --no-input
+
 USER dev
 
 EXPOSE 8000
 
-CMD ["uwsgi", "--strict", "--ini", "uwsgi.ini"]
+CMD ["./run_uwsgi.sh"]

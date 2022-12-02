@@ -72,11 +72,11 @@ class GenresToolkit(BaseToolkit):
         return genres
 
     async def put_genre_to_cache(self, genre: Genre):
-        await self.redis.set(genre.uuid, genre.json(by_alias=True), expire=settings.REDIS_CACHE_TTL)
+        await self.redis.set(genre.uuid, genre.json(by_alias=True), ex=settings.REDIS_CACHE_TTL)
         await self.redis.set(
             genre.uuid,
             genre.json(by_alias=True),
-            expire=settings.REDIS_CACHE_TTL
+            ex=settings.REDIS_CACHE_TTL
         )
 
     async def put_genres_to_cache(self, genres: List[Genre], params: dict) -> None:
@@ -84,5 +84,5 @@ class GenresToolkit(BaseToolkit):
         await self.redis.set(
             key,
             orjson.dumps([genre.json(by_alias=True) for genre in genres]),
-            expire=settings.REDIS_CACHE_TTL
+            ex=settings.REDIS_CACHE_TTL
         )

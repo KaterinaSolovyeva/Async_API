@@ -23,10 +23,12 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    redis.redis = await aioredis.create_redis_pool(
+    redis.redis = await aioredis.from_url(
         settings.REDIS_URL,
         minsize=10,
-        maxsize=20
+        maxsize=20,
+        encoding="utf-8",
+        decode_responses=True
     )
     elastic.es = AsyncElasticsearch(hosts=[f'{settings.ELASTIC_HOST}:{settings.ELASTIC_PORT}'])
 
@@ -38,11 +40,11 @@ async def shutdown():
 
 app.include_router(router, prefix='/api/v1')
 
-if __name__ == '__main__':
-    uvicorn.run(
-        'main:app',
-        host='0.0.0.0',
-        port=8000,
-        log_config=LOGGING,
-        log_level=logging.DEBUG,
-    )
+# if __name__ == '__main__':
+#     uvicorn.run(
+#         'main:app',
+#         host='0.0.0.0',
+#         port=8000,
+#         log_config=LOGGING,
+#         log_level=getattr(logging, settings.LOG_LEVEL),
+#     )

@@ -29,7 +29,12 @@ persons_sql_query = """
             array_agg(DISTINCT pfw.role)
             FILTER (WHERE pfw.id is not null),
             '{{}}'
-        ) as roles
+        ) as roles,
+        COALESCE(
+            array_agg(DISTINCT fw.id)
+            FILTER (WHERE fw.id is not null),
+            '{{}}'
+        )::text[] as film_ids
     FROM content.person p
     LEFT JOIN content.person_film_work pfw ON pfw.person_id = p.id
     LEFT JOIN content.film_work fw ON fw.id = pfw.film_work_id

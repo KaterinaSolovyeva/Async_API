@@ -23,6 +23,16 @@ async def get_persons_toolkit(
     return PersonsToolkit(redis=redis, elastic=elastic)
 
 
+@router.get("/search", response_model=List[Person])
+async def get_filtered_persons(
+    pagination_data: PaginationDataParams = Depends(PaginationDataParams),
+    person_toolkit: PersonsToolkit = Depends(get_persons_toolkit),
+    query: str = Query(None, description="Part of the person's data"),
+) -> List[Person]:
+    persons = await person_toolkit.persons_list(pagination_data=pagination_data, query=query)
+    return persons
+
+
 @router.get("/{person_uid}", response_model=Person)
 async def person_get_api(
     person_uid: uuid.UUID,
@@ -48,13 +58,3 @@ async def persons_get_films(
 ) -> List[Film]:
     films = await person_toolkit.get_persons_films(pk=person_uid)
     return films
-
-
-@router.get("/{person_uid}/search", response_model=List[Person])
-async def get_filtered_persons(
-    pagination_data: PaginationDataParams = Depends(PaginationDataParams),
-    person_toolkit: PersonsToolkit = Depends(get_persons_toolkit),
-    query: str = Query(None, description="Part of the person's data"),
-) -> List[Person]:
-    persons = await person_toolkit.persons_list(pagination_data=pagination_data, query=query)
-    return persons

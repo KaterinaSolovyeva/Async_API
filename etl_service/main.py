@@ -19,6 +19,7 @@ if __name__ == '__main__':
     while True:
         try:
             loop.run_until_complete(main())
+            logger.info("Перенос выполнен")
             loop.run_until_complete(asyncio.sleep(3600))
         except Exception as e:
             logger.exception("Во время работы сервиса возникла ошибка")

@@ -1,7 +1,7 @@
 import logging
 
 import aioredis
-import uvicorn as uvicorn
+import uvicorn
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -25,8 +25,6 @@ app = FastAPI(
 async def startup():
     redis.redis = await aioredis.from_url(
         settings.REDIS_URL,
-        minsize=10,
-        maxsize=20,
         encoding="utf-8",
         decode_responses=True
     )

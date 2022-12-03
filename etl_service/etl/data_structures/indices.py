@@ -141,6 +141,9 @@ persons_index = {
           "type": "text",
           "analyzer": "ru_en"
         },
+        "film_ids": {
+          "type": "text",
+        },
         "films": {
           "type": "nested",
           "dynamic": "strict",

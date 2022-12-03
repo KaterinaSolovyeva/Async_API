@@ -8,11 +8,11 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', default=None)
 
-DEBUG = os.environ.get('DEBUG', False) == 'True'
+DEBUG = int(os.getenv('DEBUG', default=0))
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '[::1]']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='127.0.0.1').split(' ')
 
 APPS = [
     'movies',
@@ -25,6 +25,7 @@ INSTALLED_APPS = APPS + [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rangefilter',
     'debug_toolbar',
     'django_extensions',
 ]

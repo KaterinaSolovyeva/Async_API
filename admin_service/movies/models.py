@@ -68,10 +68,11 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
     creation_date = models.DateField(verbose_name=_('creation_date'),  null=True, blank=True)
     rating = models.FloatField(
         blank=True,
+        null=True,
         verbose_name=_('rating'),
         validators=[
-            MinValueValidator(0),
-            MaxValueValidator(100)
+            MinValueValidator(0, message=_('Rating should be greater than 0')),
+            MaxValueValidator(100, message=_('Rating should be less than 100'))
         ]
     )
     genres = models.ManyToManyField("Genre", through='GenreFilmwork', verbose_name=_('genres'))
@@ -118,6 +119,6 @@ class PersonFilmwork(UUIDMixin):
         constraints = [
             UniqueConstraint(
                 name='film_work_person_idx',
-                fields=['film_work', 'person']
+                fields=['film_work', 'person', 'role']
             )
         ]

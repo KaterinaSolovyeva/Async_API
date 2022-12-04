@@ -13,9 +13,10 @@ from services.genres_toolkit import GenresToolkit
 
 router = APIRouter()
 
+
 async def get_genres_toolkit(
-        redis: Redis = Depends(get_redis),
-        elastic: AsyncElasticsearch = Depends(get_es_connection),
+    redis: Redis = Depends(get_redis),
+    elastic: AsyncElasticsearch = Depends(get_es_connection),
 ) -> GenresToolkit:
     return GenresToolkit(redis=redis, elastic=elastic)
 

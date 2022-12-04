@@ -1,5 +1,3 @@
-import uuid
-
 from typing import List
 
 from pydantic import Field
@@ -12,7 +10,7 @@ class Person(BaseMixin):
     uuid: str = Field(..., alias='id')
     full_name: str = Field(..., alias='name')
     roles: List[str]
-    film_ids: List[uuid.UUID]
+    film_ids: List[str]
 
 
 class ESFilmPerson(BaseMixin):

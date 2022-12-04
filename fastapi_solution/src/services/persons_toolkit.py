@@ -47,7 +47,7 @@ class PersonsToolkit(BaseToolkit):
             self,
             pagination_data: PaginationDataParams,
             query: str = None,
-    ) -> List[Person]:
+    ) -> Optional[List[Person]]:
         params = {
             'page_size': pagination_data.page_size,
             'page': pagination_data.page,
@@ -72,14 +72,17 @@ class PersonsToolkit(BaseToolkit):
                 }
             } if query is not None else None
             persons = await super().list(pagination_data=pagination_data, body=body)
-            await self.put_persons_to_cache(persons, params)
-            return persons
+            if persons is not None:
+                await self.put_persons_to_cache(persons, params)
+                return persons
+            else:
+                return None
 
-    async def get_persons_films(self, pk: Union[str, uuid.UUID]) -> List[Film]:
+    async def get_persons_films(self, pk: Union[str, uuid.UUID]) -> Optional[List[Film]]:
         try:
             doc = await self.elastic.get(self.entity_name, pk)
         except NotFoundError:
-            raise self.exc_does_not_exist
+            return None
         return [Film(**film) for film in doc['_source']['films']]
 
     async def get_person_from_cache(self, person_id: Union[str, uuid.UUID]) -> Optional[Person]:

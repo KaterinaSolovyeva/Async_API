@@ -29,7 +29,7 @@ async def startup():
         decode_responses=True
     )
     elastic.es = AsyncElasticsearch(
-        hosts=[f'http//{settings.ELASTIC_HOST}:{settings.ELASTIC_PORT}']
+        hosts=[f'{settings.ELASTIC_HOST}:{settings.ELASTIC_PORT}']
     )
 
 

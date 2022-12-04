@@ -1,9 +1,10 @@
 import uuid
+from http import HTTPStatus
 from typing import List
 
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.params import Query
 
 from app.connections.elastic import get_es_connection
@@ -30,6 +31,8 @@ async def get_filtered_persons(
     query: str = Query(None, description="Part of the person's data"),
 ) -> List[Person]:
     persons = await person_toolkit.persons_list(pagination_data=pagination_data, query=query)
+    if not persons:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Persons not found')
     return persons
 
 
@@ -39,6 +42,8 @@ async def person_get_api(
     person_toolkit: PersonsToolkit = Depends(get_persons_toolkit)
 ) -> Person:
     person = await person_toolkit.get(pk=person_uid)
+    if not person:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Person not found')
     return person
 
 
@@ -47,7 +52,9 @@ async def persons_get_list_api(
     pagination_data: PaginationDataParams = Depends(PaginationDataParams),
     person_toolkit: PersonsToolkit = Depends(get_persons_toolkit)
 ) -> List[Person]:
-    persons = await person_toolkit.list(pagination_data=pagination_data)
+    persons = await person_toolkit.persons_list(pagination_data=pagination_data)
+    if not persons:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Persons not found')
     return persons
 
 
@@ -57,4 +64,6 @@ async def persons_get_films(
     person_toolkit: PersonsToolkit = Depends(get_persons_toolkit)
 ) -> List[Film]:
     films = await person_toolkit.get_persons_films(pk=person_uid)
+    if not films:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Films not found')
     return films

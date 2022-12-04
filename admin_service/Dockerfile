@@ -5,6 +5,8 @@ RUN apt -y install gcc
 
 WORKDIR /opt/app
 
+RUN apt-get update && apt-get install -y gettext
+
 RUN groupadd -r dev && useradd -d /opt/app -r -g dev dev \
     && chown dev:dev -R /opt/app
 
@@ -20,10 +22,10 @@ RUN  pip install --upgrade pip \
 
 COPY . .
 
+RUN chmod -R +rw /opt/app/movies/locale
 RUN chmod +x run_uwsgi.sh
 RUN chown dev:dev /var/log
-
-RUN python manage.py collectstatic --no-input
+RUN chown -R dev:dev /opt/app
 
 USER dev
 

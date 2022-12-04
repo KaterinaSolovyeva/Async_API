@@ -1,5 +1,4 @@
 setup:
-	docker-compose exec admin python manage.py makemigrations
 	docker-compose exec admin python manage.py migrate	
 	docker-compose exec admin python manage.py collectstatic --no-input
 

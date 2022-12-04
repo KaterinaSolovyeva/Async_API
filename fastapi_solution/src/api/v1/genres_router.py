@@ -1,9 +1,10 @@
 import uuid
+from http import HTTPStatus
 from typing import List
 
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.connections.elastic import get_es_connection
 from app.connections.redis import get_redis
@@ -27,6 +28,8 @@ async def genre_get_api(
     genres_toolkit: GenresToolkit = Depends(get_genres_toolkit)
 ) -> Genre:
     genre = await genres_toolkit.get(pk=genre_uid)
+    if not genre:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Genre not found')
     return genre
 
 
@@ -35,5 +38,7 @@ async def genres_get_list_api(
     pagination_data: PaginationDataParams = Depends(PaginationDataParams),
     genres_toolkit: GenresToolkit = Depends(get_genres_toolkit)
 ) -> List[Genre]:
-    persons = await genres_toolkit.list(pagination_data=pagination_data)
-    return persons
+    genres = await genres_toolkit.list(pagination_data=pagination_data)
+    if not genres:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Genres not found')
+    return genres

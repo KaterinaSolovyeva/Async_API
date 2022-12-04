@@ -38,8 +38,11 @@ class GenresToolkit(BaseToolkit):
             return genre
         else:
             genre = await super().get(pk=pk)
-            await self.put_genre_to_cache(genre)
-            return genre
+            if genre is not None:
+                await self.put_genre_to_cache(genre)
+                return genre
+            else:
+                return None
 
     async def list(self, pagination_data: PaginationDataParams, body: Optional[dict] = None):
         params = {
@@ -53,8 +56,11 @@ class GenresToolkit(BaseToolkit):
             return genres
         else:
             genres = await super().list(pagination_data=pagination_data)
-            await self.put_genres_to_cache(genres=genres, params=params)
-            return genres
+            if genres is not None:
+                await self.put_genres_to_cache(genres=genres, params=params)
+                return genres
+            else:
+                return None
 
     async def get_genre_from_cache(self, genre_id: Union[str, uuid.UUID]) -> Optional[Genre]:
         data = await self.redis.get(str(genre_id))

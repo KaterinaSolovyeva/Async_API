@@ -3,8 +3,6 @@ from pydantic import BaseSettings, Field
 
 class ElasticSettings(BaseSettings):
     hosts: str = Field('http://localhost:9200', env='ELASTIC_ADDRESS')
-    validate_cert: bool = False
-    use_ssl: bool = False
 
 
 class RedisSettings(BaseSettings):

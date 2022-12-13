@@ -2,7 +2,6 @@ import os
 import sys
 
 from elasticsearch import Elasticsearch
-
 from helpers import backoff
 
 current = os.path.dirname(os.path.realpath(__file__))

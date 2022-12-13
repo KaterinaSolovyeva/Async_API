@@ -14,7 +14,9 @@ class RedisSettings(BaseSettings):
 class TestSettings(BaseSettings):
     ELASTIC_DSN: ElasticSettings = ElasticSettings()
     REDIS_DSN: RedisSettings = RedisSettings()
-    service_url: str = Field('http://localhost:8001/api/v1', env='SERVICE_URL')
+    REDIS_URL: str = 'redis://localhost:6379'
+    SERVICE_URL: str = 'http://localhost:8001/api/v1'
+    TEST_QUANTITY: int = 1
 
     class Config:
         env_file = '.env'

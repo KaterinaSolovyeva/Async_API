@@ -1,5 +1,6 @@
 from functools import wraps
 from time import sleep
+from typing import Generator, List
 
 
 def backoff(
@@ -37,3 +38,23 @@ def backoff(
                     sleep(sleep_time)
         return inner
     return func_wrapper
+
+
+def gendata(data: List[dict], index: str) -> Generator:
+    """Generates structure of the index documents."""
+    for row in data:
+        yield {
+            '_index': index,
+            '_id': row['id'],
+            '_source': row
+        }
+
+
+def delete_docs(docs: List[dict], index: str) -> Generator:
+    """Deletes list of documents in index."""
+    for doc in docs:
+        yield {
+            '_op_type': 'delete',
+            '_index': index,
+            '_id': doc['id'],
+        }
